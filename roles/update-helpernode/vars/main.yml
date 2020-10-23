@@ -15,8 +15,8 @@ sshd_config: "/etc/ssh/sshd_config"
 
 helper:
   name: "{{ ansible_hostname }}"
-  ipaddr: "{{ ansible_default_ipv4.address }}"
-  networkifacename: "{{ ansible_default_ipv4.interface }}"
+  ipaddr: "{{ ansible_eth0.ipv4.address }}"
+  networkifacename: "{{  ansible_eth0.device }}"
 
 
 

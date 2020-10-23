@@ -26,6 +26,7 @@
      allbootstraphostids: "{{ allbootstraphostids|default({}) | combine( {item.ansible_facts.dataresult.hostname: item.ansible_facts.dataresult.id} ) }}"
    with_items:
        - "{{ contentof_bootstrapnodes_stdout.results }}"
+   no_log: True
 
 
 
@@ -54,6 +55,7 @@
      allhelpernodehostids: "{{ allbootstrapallhostids|default({}) | combine( {item.ansible_facts.dataresult.hostname: item.ansible_facts.dataresult.id} ) }}"
    with_items:
        - "{{ contentof_helpernodes_stdout.results }}"
+
 
 
 
@@ -127,18 +129,22 @@
 
 # Print out all the host info
 
-#  - name: debug
-#    debug:
-#      var: allworkernodehostsinfo
-#  - name: debug
-#    debug:
-#      var: allhelpernodehostsinfo
-#  - name: debug
-#    debug:
-#      var: allbootstrapnodehostsinfo
-#  - name: debug
-#    debug:
-#      var: allmasternodehostsinfo
+ - name: debug
+   debug:
+     var: allworkernodehostsinfo
+   when: debug|default(false) == true
+ - name: debug
+   debug:
+     var: allhelpernodehostsinfo
+   when: debug|default(false) == true
+ - name: debug
+   debug:
+     var: allbootstrapnodehostsinfo
+   when: debug|default(false) == true
+ - name: debug
+   debug:
+     var: allmasternodehostsinfo
+   when: debug|default(false) == true
 
 
 
@@ -168,5 +174,12 @@
      src: "{{ role_path }}/templates/allhostic4gids.j2"
      dest: "{{ role_path }}/../../artifacts/main.yml"
 
+#  - name: Shutdown Pubic Port for Helper node
+#    expect:
+#      command: "slcli vs edit {{ item }} --public-speed 0"
+#      responses: 
+#        (?i)Continue?: "y"
+#    with_items: " {{ sl_ocp_helpernode }}"
+#    when: sl_vyatta|bool == false
      
             

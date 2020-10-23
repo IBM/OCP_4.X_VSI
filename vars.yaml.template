@@ -34,6 +34,16 @@ sl_vlan_info:
 sl_vsi_billing: "hourly"
 
 
+#Hint: For IBM GOV CLoud you use this: time.service.usgov.softlayer.com
+#Hint: For IBM CLoud you can use this: time.service.networklayer.com
+#ntp_server: "PICK_THE_TIME_SERVER_VALUE"
+
+
+# If vyatta is already deployed as part of the infrastructure then set the boolean value to true. 
+# If vyatta is not part of infrastructure then set the boolean value  to false
+sl_vyatta: true
+
+
 # OPENSHIFT INFORMATION
 # Hint:  For RedHat you can get this using: https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret: '<openshift_install_key>'
@@ -50,7 +60,9 @@ base_domain: "<your_base_domain>"
 base_domain_prefix: "<your_base_domain_geolocation>"
 # Hint: dev
 sl_ocp_host_prefix: "<your_environment_name_identifer>"
-
+# Hint: false or true by default false
+#If FIPS mode is enabled, the Red Hat Enterprise Linux CoreOS (RHCOS) machines that OpenShift Container Platform runs on bypass the default Kubernetes cryptography suite and use the cryptography modules that are provided with RHCOS instead
+fips_flag: false
 
 # OPENSHIFT HOSTNAME INFO
 sl_ocp_worker_node_name_prefix: "{{sl_ocp_host_prefix}}-worker-"

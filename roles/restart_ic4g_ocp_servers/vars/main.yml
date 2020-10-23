@@ -1,0 +1,35 @@
+bootstraphostids:
+ 
+# hostname: fips-bootstrap
+  - 106365556    
+ 
+masterhostids:
+# hostname: fips-master-0
+  - 106365562 
+# hostname: fips-master-1
+  - 106365570 
+# hostname: fips-master-2
+  - 106365586 
+
+workerhostids:
+# hostname: fips-worker-0
+  - 106365590     
+# hostname: fips-worker-1
+  - 106365594     
+# hostname: fips-worker-2
+  - 106365606     
+# hostname: fips-worker-3
+  - 106365610     
+# hostname: fips-worker-4
+  - 106365618     
+# hostname: fips-worker-5
+  - 106365626     
+# hostname: fips-worker-6
+  - 106365634     
+# hostname: fips-worker-7
+  - 106365638     
+
+
+helperhostids:
+# hostname: fips-helpernode
+  - 106365546     

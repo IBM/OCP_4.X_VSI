@@ -1,0 +1,6 @@
+- include: setup_env.yaml
+  when: sl_vyatta|bool == false
+- include: ignition_files.yaml
+  when: sl_vyatta|bool == false
+- include: sync_time.yaml
+  when: sl_vyatta|bool == false

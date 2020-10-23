@@ -30,9 +30,17 @@
      - update-helpernode
 
 
-###########
-#  Restart servers in sequence
-############
+- hosts: vsi_sl_helper_guest
+  vars:
+    ansible_python_interpreter: "/usr/bin/python"
+  roles:
+     - update_helpernode_no_vyatta
+
+  
+
+########
+####Restart servers in sequence
+##########
 - hosts: localhost
   vars:
     ansible_python_interpreter: "/usr/bin/python"

@@ -1,2 +1,4 @@
 ---
 # vars file for create_vsi_servers
+
+network_speed: 1000

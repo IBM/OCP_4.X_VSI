@@ -1,0 +1,37 @@
+
+# Setup OCP4 Helper Node
+- name: validate hostnames
+  include_vars: "{{ item }}"
+  with_items:
+    - "{{ role_path }}/../../artifacts/main.yml"
+#################
+# IC4G Nodes
+##################
+- name: Reload all Openshift bootstrap node
+  shell: slcli  -y vs reload {{item}} -k ocp-key
+  with_items: "{{ bootstraphostids }}"
+  loop_control:
+        pause: 60   
+
+
+
+- name: Reload all the Openshift master nodes
+  shell: slcli  -y vs reload  {{item}} -k ocp-key
+  with_items: "{{ masterhostids }}"
+  loop_control:
+        pause: 60   
+
+- name: Reload all the Openshift worker nodes
+  shell: slcli  -y vs reload  {{item}} -k ocp-key
+  with_items: "{{ workerhostids }}"
+  loop_control:
+        pause: 60   
+
+
+- name: Reload all the Openshift helper nodes
+  shell: slcli  -y vs reload  {{item}} -k ocp-key
+  with_items: "{{ helperhostids }}"
+  loop_control:
+        pause: 60   
+
+

@@ -83,6 +83,7 @@
     template:
       src: ../templates/zonefile.j2
       dest: /var/named/zonefile.db
+      mode: 644
     notify:
       - restart bind
   
@@ -90,6 +91,7 @@
     template:
       src: ../templates/reverse.j2
       dest: /var/named/reverse.db
+      mode: 644
     notify:
       - restart bind
   
@@ -409,13 +411,13 @@
       mode: '0555'
     when: install_filetranspiler
 
-  - name: Restarting NetworkManager
-    service:
-      name: "{{ item }}"
-      enabled:   yes
-      state: restarted
-    with_items:
-      - NetworkManager
+  # - name: Restarting NetworkManager
+  #   service:
+  #     name: "{{ item }}"
+  #     enabled:   yes
+  #     state: restarted
+  #   with_items:
+  #     - network
 
   - name: Get network device system name
     shell: "nmcli -t dev show {{ helper.networkifacename }} | grep GENERAL.CONNECTION | cut -d: -f2"
@@ -426,14 +428,14 @@
       dsname: "{{devicesystemname.stdout}}"
     when: devicesystemname.stdout != ""
 
-  - name: Setting network device system name as a fact
+  - name: Setting network device system name as a fact when nmcli command return empty
     set_fact:
       dsname: "{{default_nic}}"
     when: devicesystemname.stdout == ""
   
   - debug: msg="{{ dsname }}"
 
-  - name: Add IP address of all hosts to all hosts
+  - name: Update reslove.conf with local ip address
     lineinfile:
       path: "/etc/resolv.conf"
       regexp: '^127.0.0.1'
@@ -441,7 +443,7 @@
       state: present
     when: devicesystemname.stdout == ""
 
-  - name: Add IP address of all hosts to all hosts
+  - name: Update reslove.conf with search domain
     lineinfile:
       path: "/etc/resolv.conf"
       regexp: '^{{ dns.clusterid }}.{{ dns.domain }}'

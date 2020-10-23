@@ -1,0 +1,45 @@
+
+[local_host]
+127.0.0.1 ansible_connection=local
+
+
+
+[vsi_sl_guest_bootstrap]
+ 
+# hostname: fips-bootstrap
+10.57.97.32 ansible_user=root ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+ 
+[vsi_sl_guest_masters]
+# hostname: fips-master-0
+10.57.97.36 ansible_user=root ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes          
+# hostname: fips-master-1
+10.57.97.45 ansible_user=root ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes          
+# hostname: fips-master-2
+10.57.97.46 ansible_user=root ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes          
+
+[vsi_sl_guest_workers]
+# hostname: fips-worker-0
+10.57.97.56 ansible_user=root  ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+# hostname: fips-worker-1
+10.57.97.2 ansible_user=root  ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+# hostname: fips-worker-2
+10.57.97.10 ansible_user=root  ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+# hostname: fips-worker-3
+10.57.97.11 ansible_user=root  ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+# hostname: fips-worker-4
+10.57.97.14 ansible_user=root  ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+# hostname: fips-worker-5
+10.57.97.18 ansible_user=root  ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+# hostname: fips-worker-6
+10.57.97.20 ansible_user=root  ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+# hostname: fips-worker-7
+10.57.97.23 ansible_user=root  ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes       
+
+#[endof_ocp_sl_guest]
+
+
+[vsi_sl_helper_guest]
+# hostname: fips-helpernode
+10.57.97.16 ansible_user=root ansible_ssh_private_key_file=/Users/singhxp/ibm/ibm/IBMGITHUB/OCP/OCP_4.X_VSI_RESTRICTED_NETWORK/roles/create_ic4g_ocp_servers/files/sl_ssh_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'  ansible_become=yes      
+
+#[endof_sl_guest]

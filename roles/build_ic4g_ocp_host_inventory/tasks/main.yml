@@ -1,10 +1,43 @@
 ---
 # tasks file for create_opc_host_inventory
 
+- name: Display all variables/facts known for a host
+  debug:
+    var: hostvars[inventory_hostname]
+    verbosity: 4
+  when: debug|default(false) == true
+
 
 ### write out the host file 
- - name: Write out host information to a file
-   template:
-     src: "{{ role_path }}/templates/host_inventory.j2"
-     dest: "{{ role_path }}/../../artifacts/host_inventory.yml"
-   delegate_to: localhost
+- name: Write out host information to a file
+  template:
+    src: "{{ role_path }}/templates/host_inventory.j2"
+    dest: "{{ role_path }}/../../artifacts/host_inventory.yml"
+  delegate_to: localhost
+  when: sl_vyatta|bool == true
+
+
+- name: Echo the passed IP
+  debug: var={{ ansible_eth0.ipv4.network }}
+  when: sl_vyatta|bool == false
+
+- name: Extract the last octet, increment it and store it
+  set_fact: octet={{ansible_eth0.ipv4.network.split('.')[3] | int + 1 }}
+
+- debug: var=octet
+  when: sl_vyatta|bool == false
+
+- name: Append the incremented octet to the first 3 octets
+  set_fact: calculated_gateway="{{ ansible_eth0.ipv4.network | regex_replace('(^.*\.).*$', '\\1') }}{{octet}}"
+  when: sl_vyatta|bool == false
+
+- debug: var=calculated_gateway
+  when: sl_vyatta|bool == false
+
+### write out the host file 
+- name: Write out host information to a file
+  template:
+    src: "{{ role_path }}/templates/host_inventory_no_vyatta.j2"
+    dest: "{{ role_path }}/../../artifacts/host_inventory.yml"
+  delegate_to: localhost
+  when: sl_vyatta|bool == false

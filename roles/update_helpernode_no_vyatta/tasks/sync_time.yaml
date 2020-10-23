@@ -1,0 +1,221 @@
+
+- name: Yum install latest noarch rpm
+  shell: "yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+  ignore_errors: True
+
+- name: yum install jq8
+  shell: "yum install jq -y"
+
+
+- name: Ensure a list of packages installed
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - epel-release 
+    - jq 
+    - net-tools
+    - git
+    - docker
+
+- name: Copy a ocp4 directory for backup
+  copy:
+    src: /opt/ocp4
+    dest: /opt/ocp4_{{ansible_date_time.iso8601_micro}}_sync
+    remote_src: yes
+
+
+- name: Backup openshift-install command
+  shell: "for i in *.ign ; do cp ${i} ${i}.backup ; done"
+  args:
+    chdir: /opt/ocp4
+
+- name: Create a directory if it does not exist
+  file:
+    path: /opt/ocp4/bootstrap/etc
+    state: directory
+
+
+
+- name: Write out chrony file
+  template:
+    src: "{{ role_path }}/templates/chrony.conf.j2"
+    dest: /opt/ocp4/bootstrap/etc/chrony.conf
+
+- name: Chmod chrony.conf file 420
+  shell: "chmod 420 /opt/ocp4/bootstrap/etc/chrony.conf"
+
+- name: Write out motd file
+  template:
+    src: "{{ role_path }}/templates/motd.j2"
+    dest: /opt/ocp4/bootstrap/etc/motd.txt
+
+- name: ensure a directory exists
+  file:
+    path: /opt/ocp4/master_fake
+    state: directory
+
+- name: ensure a directory exists
+  file:
+    path: /opt/ocp4/worker_fake
+    state: directory
+
+# - name: Chmod chrony.conf file 420
+#   shell: "mkdir /opt/ocp4/master_fake"
+
+# - name: Chmod chrony.conf file 420
+#   shell: "mkdir /opt/ocp4/worker_fake"
+
+
+- name: Copy files from *.back to *.ign and make sure to make them human readable with jq
+  shell: "for i in *.ign ; do cat ${i} | jq > ${i}.json  ; done"
+  args:
+    chdir: /opt/ocp4
+
+- name: slurp the motd
+  shell: "cat bootstrap/etc/motd.txt | base64 -w0"
+  args:
+    chdir: /opt/ocp4
+  register: new_base64_mod
+
+- name: slurp the chrony 
+  shell: "cat bootstrap/etc/chrony.conf | base64 -w0"
+  args:
+    chdir: /opt/ocp4
+  register: new_base64_chrony
+
+- name: debug chrony
+  debug:
+    var: new_base64_chrony
+  when: debug|default(false) == true
+
+- name: debug mod
+  debug:
+    var: new_base64_mod
+  when: debug|default(false) == true
+   
+- name: Write out modify_worker_master.ign to a file 
+  template:
+    src: "{{ role_path }}/templates/modify_worker_master.ign.yml.j2"
+    dest: /opt/ocp4/modify_worker_master.ign.yml
+
+
+
+- name: Read the modify_worker_master.ign.yml file content
+  slurp:
+    src: /opt/ocp4/modify_worker_master.ign.yml
+  register: slurp_remote_file_master_worker
+
+- name: Set fact of modify_worker_master.ign.yml content
+  set_fact: add_to_master_worker={{ slurp_remote_file_master_worker['content'] | b64decode }} 
+
+
+
+
+- name: Update master.ign with time server info
+  replace:
+    path: /opt/ocp4/master.ign.json
+    regexp: '"storage": {},'
+    replace: |-
+      {{ add_to_master_worker }}
+
+
+- name: Update worker.ign with time server info
+  replace:
+    path: /opt/ocp4/worker.ign.json
+    regexp: '"storage": {},'
+    replace: |-
+      {{ add_to_master_worker }}
+
+
+
+# - name: Write out modify_bootstrap.ign to a file 
+#   template:
+#     src: "{{ role_path }}/templates/modify_bootstrap.ign.yml.j2"
+#     dest: /opt/ocp4/modify_bootstrap.ign.yml
+
+# - name: Read the modify_bootstrap.ign.yml file content
+#   slurp:
+#     src: /opt/ocp4/modify_bootstrap.ign.yml
+#   register: slurp_remote_file_bootstrap
+
+# - name: Set fact of modify_bootstrap.ign.ym content
+#   set_fact: add_to_bootstrap={{ slurp_remote_file_bootstrap['content'] | b64decode }} 
+
+# - name: Update bootstrap.ign with time server info
+#   replace:
+#     path: /opt/ocp4/bootstrap.ign
+#     regexp: '          "source": "data:text/plain;charset=utf-8;base64,VGhpcyBpcyB0aGUgYm9vdHN0cmFwIG5vZGU7IGl0IHdpbGwgYmUgZGVzdHJveWVkIHdoZW4gdGhlIG1hc3RlciBpcyBmdWxseSB1cC4KClRoZSBwcmltYXJ5IHNlcnZpY2UgaXMgImJvb3RrdWJlLnNlcnZpY2UiLiBUbyB3YXRjaCBpdHMgc3RhdHVzLCBydW4gZS5nLgoKICBqb3VybmFsY3RsIC1iIC1mIC11IGJvb3RrdWJlLnNlcnZpY2UK",'
+#     replace: |-
+#       {{add_to_bootstrap}}
+
+
+- name: Downloading filetranspiler source
+  git:
+    repo: https://github.com/ashcrow/filetranspiler
+    dest: /usr/local/src/filetranspiler
+
+
+  
+# Currently a bug to pull large file with podman so switch to docker
+# - name: Building filetranspiler
+#   shell: "podman build /usr/local/src/filetranspiler -t filetranspiler:latest"
+
+- name: Start service docker, if not started
+  service:
+    name: docker
+    state: started
+
+- name: Building filetranspiler
+  shell: "docker build /usr/local/src/filetranspiler -t filetranspiler:latest"
+
+- name: Saving docker filetranspiler images to tmp dir (due go podman bug unnecessary part1) 
+  shell: "docker save -o temp.tar filetranspiler:latest"
+  args:
+    chdir: /tmp
+- name: Moving docker filetranspiler images to podman (due go podman bug unnecessary part2) 
+  shell: "podman pull docker-archive:temp.tar"
+  args:
+    chdir: /tmp
+
+- name: Installing filetranspiler
+  copy:
+    src: ../files/filetranspiler
+    dest: /usr/local/bin/filetranspiler
+    mode: '0555'
+
+
+# - name: Copy files from *.back to *.ign and make sure to make them human readable with jq
+#   shell: "for i in *.ign ; do filetranspiler  -i ${i}.backb4sync -f bootstrap -o ${i}  ; done"
+#   args:
+#     chdir: /opt/ocp4
+
+
+- name: Copy files from *.back to *.ign and make sure to make them human readable with jq
+  shell: "podman run --rm -ti --volume /opt/ocp4:/srv:z localhost/filetranspiler:latest -i bootstrap.ign.backup  -f bootstrap -o bootstrap.ign"
+  args:
+    chdir: /opt/ocp4
+
+- name: Copy files from *.back to *.ign and make sure to make them human readable with jq
+  shell: "podman run --rm -ti --volume /opt/ocp4:/srv:z localhost/filetranspiler:latest -i master.ign.json -f /opt/ocp4/master_fake -o master.ign"
+  args:
+    chdir: /opt/ocp4
+- name: Copy files from *.back to *.ign and make sure to make them human readable with jq
+  shell: "podman run --rm -ti --volume /opt/ocp4:/srv:z localhost/filetranspiler:latest -i worker.ign.json  -f /opt/ocp4/worker_fake -o worker.ign"
+  args:
+    chdir: /opt/ocp4
+
+
+- name: copy the ignition files to http server location
+  copy:
+    src: /opt/ocp4/{{item}} 
+    dest: /var/www/html/ignition/
+    mode: '0644'
+    remote_src: yes
+  with_items: 
+     ['master.ign', 'bootstrap.ign', 'worker.ign']
+
+- name: restocon command on http server
+  command: restorecon -vR /var/www/html/
+

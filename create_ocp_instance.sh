@@ -1,4 +1,16 @@
 #!/bin/bash
+
+if [ "$1" != "" ]; then
+    myfilename=${1}
+    echo "Positional parameter 1 contains something"
+else
+    myfilename="vars.yaml"
+    echo "Positional parameter 1 is empty"
+fi
+echo "Your var filename is : $myfilename"
+
+
+
 dir=${PWD}  
 p_now=$(date +"%T")
 start=$(date +%s)
@@ -29,19 +41,18 @@ else
      echo please add slcli to your local path by 
      exit
 fi
-
+cp -f $dir/${myfilename} $dir/artifacts/vars.yaml
 echo "############################################################################################"
 echo "#                    PROVISIONED START TIME : $p_now                                       #"
 echo "############################################################################################"
 
 
-
-ansible-playbook  -e @vars.yaml  $dir/play1.yaml
+ansible-playbook  -e @${myfilename}  $dir/play1.yaml
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 now=$(date +"%T")
 
 echo "Current time : $now"
-ansible-playbook  -e @vars.yaml  $dir/play2.yaml -i $dir/artifacts/hosts
+ansible-playbook  -e @${myfilename}  $dir/play2.yaml -i $dir/artifacts/hosts
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 q_now=$(date +"%T")
@@ -50,7 +61,7 @@ execution_time=`printf "%.2f seconds" $duration`
 now=$(date +"%T")
 
 echo "Current time : $now"
-ansible-playbook  -e @vars.yaml  $dir/play3.yaml -i $dir/artifacts/hosts
+ansible-playbook  -e @${myfilename}  $dir/play3.yaml -i $dir/artifacts/hosts
 r_now=$(date +"%T")
 duration=$(echo "$(date +%s) - $start" | bc)
 execution_time=`printf "%.2f seconds" $duration`

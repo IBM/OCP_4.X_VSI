@@ -63,7 +63,7 @@
       size: 2048
       force: True
 
-  - name: adding ssh key to localhost
+  - name: Adding ssh key to localhost
     shell: |
       exec ssh-agent bash 
       ssh-add {{role_path}}/files/sl_ssh_rsa
@@ -85,14 +85,14 @@
       dest: ~/  # link to /path/to/file
       follow: yes
 
-  - name: Copy RSA file to artifacts to SoftLayer config file
+  - name: Copy RSA Private file to artifacts to SoftLayer config file
     copy:
       src: "{{role_path}}/files/sl_ssh_rsa"
       remote_src: yes
       dest: "{{role_path}}/../../artifacts/sl_ssh_rsa" # link to /path/to/file
      
   
-  - name: Copy RSA file to artifacts to Softlayer config file
+  - name: Copy RSA Public file to artifacts to Softlayer config file
     copy:
       src: "{{role_path}}/files/sl_ssh_rsa.pub"
       remote_src: yes
@@ -105,7 +105,8 @@
     shell: "slcli  sshkey list | grep ocp-key"
     ignore_errors: true
   
-  #- debug: var=contentof_all_sl_sshkeys.stdout_lines
+  - debug: var=contentof_all_sl_sshkeys.stdout_lines
+    when: debug|default(false) == true
  
   - set_fact:
       all_sl_ocp_key: "{{ contentof_all_sl_sshkeys.stdout_lines }}"
@@ -136,6 +137,7 @@
   
   - debug:
       msg: "{{ contentof_sl_vlan_id }}"
+    when: debug|default(false) == true
 
 
   

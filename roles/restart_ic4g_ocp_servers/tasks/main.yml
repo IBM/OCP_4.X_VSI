@@ -3,26 +3,29 @@
 #################
 # IC4G Nodes
 ##################
-- name: Restart all Openshift bootstrap node
+- name: Restart all OpenShift bootstrap node
   shell: slcli  -y vs reboot --hard {{item}}
   with_items: "{{ bootstraphostids }}"
   loop_control:
-        pause: 60   
+        pause: 120   
 
 
 
-- name: Restart all the Openshift master nodes
+- name: Restart all the OpenShift master nodes
   shell: slcli  -y vs reboot --hard {{item}}
   with_items: "{{ masterhostids }}"
   loop_control:
-        pause: 60   
+        pause: 120   
 
-- name: Restart all the Openshift worker nodes
+- name: Restart all the OpenShift worker nodes
   shell: slcli  -y vs reboot --hard {{item}}
   with_items: "{{ workerhostids }}"
   loop_control:
-        pause: 60   
+        pause: 120   
 
 
 
-
+- name: Copy vars file to artifacts directory
+  copy:
+    src: "{{role_path}}/../../vars.yaml"      
+    dest: "{{role_path}}/../../artifacts/sl_infrastructure_vars.yaml" 

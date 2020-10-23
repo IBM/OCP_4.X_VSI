@@ -1,0 +1,34 @@
+apiVersion: v1
+baseDomain: "{{ base_domain }}"
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: {{ base_domain_prefix }}
+networking:
+  machineCIDR: "{{ portable.subnet }}"
+  clusterNetworks:
+  - cidr: 172.30.0.0/16
+    hostPrefix: 23
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.21.0.0/16
+platform:
+  none: {}
+fips: {{ fips_flag }}
+pullSecret: '{"auths":{"{{sl_ocp_helpernode[0]}}.{{base_domain_prefix}}.{{base_domain}}:5000": {"auth": "{{HTTP_AUTH}}","email": "noemail@localhost"}}}'
+sshKey: '{{ new_rsa_key['content'] | b64decode }}'
+additionalTrustBundle: |
+{{ cert|indent(2, true)}}
+imageContentSources: 
+- mirrors:
+  - {{sl_ocp_helpernode[0]}}.{{base_domain_prefix}}.{{base_domain}}:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-release
+- mirrors:
+  - {{sl_ocp_helpernode[0]}}.{{base_domain_prefix}}.{{base_domain}}:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev

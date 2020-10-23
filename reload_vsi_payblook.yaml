@@ -1,0 +1,4 @@
+
+- hosts: local_host
+  roles:
+    - reload_vsi 

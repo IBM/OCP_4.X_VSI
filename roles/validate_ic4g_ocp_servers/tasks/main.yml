@@ -1,19 +1,32 @@
 ---
-# tasks file for validate_ic4g_ocp_servers
-- pause:
-    minutes: 15
+# # tasks file for validate_ic4g_ocp_servers
+# - pause:
+#     minutes: 15
     
 
 
-- name: Echo my_env_var
+- name: Run OpenShift install command for bootstrap to complete
   shell: "openshift-install wait-for bootstrap-complete --log-level debug"
   args:
     chdir: '/opt/ocp4'
+  retries: 15
+  delay: 60
   register: bootstrapcomplete
+  until: bootstrapcomplete.rc == 0
+
 
 - debug: var=bootstrapcomplete.stderr_lines
 
-- name: Echo openshift-install complete
+- name: Approve any pending CSRs 
+  shell: "oc get csr -o name | xargs oc adm certificate approve"
+  args:
+    chdir: '/opt/ocp4'
+  register: openshiftclusteroperators
+  environment:
+    KUBECONFIG: "/opt/ocp4/auth/kubeconfig"
+
+
+- name: Run  OpenShift-install  command to complete the process
   shell: "openshift-install wait-for install-complete"
   args:
     chdir: '/opt/ocp4'
@@ -32,7 +45,15 @@
 
 - debug: var=openshiftNodeInfo.stdout_lines
 
+- name: Approve any pending CSRs 
+  shell: "oc get csr -o name | xargs oc adm certificate approve"
+  args:
+    chdir: '/opt/ocp4'
+  register: openshiftclusteroperators
+  environment:
+    KUBECONFIG: "/opt/ocp4/auth/kubeconfig"
 
+- debug: var=openshiftclusteroperators.stdout_lines
 
 - name: Echo oc get clusteroperators
   shell: "oc get clusteroperators"

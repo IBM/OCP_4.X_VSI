@@ -1,0 +1,60 @@
+
+
+
+portable:
+  subnet: "255.255.255.192/26"
+dns:
+  domain: "fsic.lab"
+  clusterid: "spark"
+  forwarder1: "10.0.80.11"
+  forwarder2: "10.0.80.12"
+dhcp:
+  router: "10.57.97.1"
+  bcast: "10.57.97.63"
+  netmask: "255.255.255.192"
+  poolstart: "10.57.97.0"
+  poolend: "10.57.97.63"
+  ipid: "10.57.97.0"
+  netmaskid: "255.255.255.192"
+
+bootstrap:
+  name: "fips-bootstrap"
+  ipaddr: "10.57.97.32"
+  macaddr: "06:be:71:de:7e:49"
+
+masters:
+  - name: "fips-master-0"
+    ipaddr: "10.57.97.36"
+    macaddr: "06:b8:53:a1:76:12"
+  - name: "fips-master-1"
+    ipaddr: "10.57.97.45"
+    macaddr: "06:44:dc:c4:93:ee"
+  - name: "fips-master-2"
+    ipaddr: "10.57.97.46"
+    macaddr: "06:b6:7b:2d:6c:8c"
+
+workers:
+  - name: "fips-worker-0"
+    ipaddr: "10.57.97.56"
+    macaddr: "06:d0:ba:77:f4:d7"
+  - name: "fips-worker-1"
+    ipaddr: "10.57.97.2"
+    macaddr: "06:14:27:3e:44:af"
+  - name: "fips-worker-2"
+    ipaddr: "10.57.97.10"
+    macaddr: "06:97:97:cb:ca:c5"
+  - name: "fips-worker-3"
+    ipaddr: "10.57.97.11"
+    macaddr: "06:37:f0:10:fa:67"
+  - name: "fips-worker-4"
+    ipaddr: "10.57.97.14"
+    macaddr: "06:52:03:9a:7c:fe"
+  - name: "fips-worker-5"
+    ipaddr: "10.57.97.18"
+    macaddr: "06:a2:f8:a9:be:23"
+  - name: "fips-worker-6"
+    ipaddr: "10.57.97.20"
+    macaddr: "06:6f:6f:e7:c9:00"
+  - name: "fips-worker-7"
+    ipaddr: "10.57.97.23"
+    macaddr: "06:0c:4f:0d:f5:bd"

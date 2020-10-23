@@ -20,5 +20,6 @@ networking:
   - 172.21.0.0/16
 platform:
   none: {}
+fips: {{ fips_flag }}
 pullSecret: '{{ pullsecret }}'
 sshKey: '{{ new_rsa_key['content'] | b64decode  }}'

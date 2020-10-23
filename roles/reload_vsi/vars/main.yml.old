@@ -1,0 +1,31 @@
+bootstraphostids:
+ 
+# hostname: dev-bootstrap
+  - 103756814    
+ 
+masterhostids:
+# hostname: dev-master-0
+  - 103756820 
+# hostname: dev-master-1
+  - 103756838 
+# hostname: dev-master-2
+  - 103756852 
+
+workerhostids:
+# hostname: dev-worker-0
+  - 103756856     
+# hostname: dev-worker-1
+  - 103756872     
+# hostname: dev-worker-2
+  - 103756884     
+# hostname: dev-worker-3
+  - 103756896     
+# hostname: dev-worker-4
+  - 103756904     
+# hostname: dev-worker-5
+  - 103756912     
+
+
+helperhostids:
+# hostname: dev-helpernode
+  - 103756794     

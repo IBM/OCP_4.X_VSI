@@ -1,0 +1,267 @@
+---
+#tasks file for update_helpernode_no_network
+
+- debug: var=ansible_facts.nodename
+  when: sl_vyatta|bool == true
+
+
+- name: update epel -release
+  shell: "yum -y install epel-release"
+
+
+
+- name: set setup facts
+  include: set_facts_.yaml
+
+- name: Install needed packages
+  package:
+    name: "{{ packages }}"
+    state: present
+
+- name: update the system
+  yum:
+    name: "*"
+    state: latest
+
+- name: Create a auth directory if it does not exist
+  file:
+    path: /opt/registry/auth
+    state: directory
+
+- name: Create a certs directory if it does not exist
+  file:
+    path: /opt/registry/certs
+    state: directory
+
+- name: Create a data directory if it does not exist
+  file:
+    path: /opt/registry/data
+    state: directory
+
+- name: Install pyOpenSSL
+  shell: "python3 -m pip install pyopenssl"
+
+# - name: Generate an OpenSSL private key with a different size (2048 bits)
+#   openssl_privatekey:
+#     path: /opt/registry/certs/domain.key
+#     size: 4096
+
+
+# - name: Generate an OpenSSL Certificate Signing Request with Subject information
+#   openssl_csr:
+#     path: /opt/registry/certs/domain.csr
+#     privatekey_path: /opt/registry/certs/domain.key
+#     country_name: US
+#     organization_name: OCP
+#     email_address: jdoe@ansible.com
+#     common_name: xdev-helpernode.wdc01.hs.ibm.com 
+
+
+# - name: Generate a self signed certificate
+#   openssl_certificate:
+#     csr_path: /opt/registry/certs/domain.csr
+#     path: /opt/registry/certs/domain.crt
+#     privatekey_path: /opt/registry/certs/domain.key
+#     provider: selfsigned
+#     force: yes
+- name: Create new Cert 
+  shell: "faketime -f   -5d openssl req -newkey rsa:4096 -nodes -sha256 -keyout domain.key -x509 -days 365 -out domain.crt -subj \"/C=US/ST=Utah/L=Lehi/O=Your Company, Inc./OU=IT/CN={{sl_ocp_helpernode[0]}}.{{base_domain_prefix}}.{{base_domain}}\""
+  args:
+    chdir: /opt/registry/certs
+
+
+
+
+- name: create httpasswd  for registry auth
+  shell: "htpasswd -bBc /opt/registry/auth/htpasswd dummy dummy"
+  args:
+    chdir: /opt/registry/auth
+
+- name: Create new Firewall zone privateOCP 
+  shell: "firewall-cmd --new-zone=privateOCP  --permanent"
+  ignore_errors: yes
+
+- name: Create new Firewall zone privateOCP 
+  shell: "firewall-cmd --new-zone=publicOCP  --permanent"
+  ignore_errors: yes
+
+- name: Create new Firewall update 
+  shell: "firewall-cmd --reload"
+
+- name: Open ssh firewall ports eth0
+  firewalld:
+    zone: privateOCP
+    service: ssh
+    permanent: yes
+    immediate: yes
+    state: enabled    
+
+- name: Open up firewall ports eth0
+  firewalld:
+    zone: privateOCP
+    permanent: yes
+    immediate: yes
+    state: enabled
+    port: "{{ item }}"
+  with_items:
+    - 5000/tcp
+    - 67/udp
+    - 53/tcp
+    - 53/udp
+    - 443/tcp
+    - 80/tcp
+    - 8080/tcp
+    - 6443/tcp
+    - 6443/udp
+    - 22623/tcp
+    - 22623/udp
+    - 9000/tcp
+    - 69/udp
+    - 111/tcp
+    - 2049/tcp
+    - 20048/tcp
+    - 50825/tcp
+    - 53248/tcp
+
+
+
+- name: Open up firewall ports eth1
+  firewalld:
+    zone: publicOCP
+    permanent: yes
+    immediate: yes
+    state: enabled
+    port: "{{ item }}"
+  with_items:
+    - 443/tcp
+    - 80/tcp
+    - 8080/tcp
+    - 6443/tcp
+    - 6443/udp
+
+- name:  Update Firewall zone interface eth0
+  shell: "firewall-cmd --zone=privateOCP --change-interface=eth0"
+
+- name: Update Firewall zone interface eth1
+  shell: "firewall-cmd --zone=publicOCP --change-interface=eth1"
+    
+- name: copy the cert to anchors  directory 
+  shell: "cp /opt/registry/certs/domain.crt /etc/pki/ca-trust/source/anchors/"
+
+- name: Downloading pip installer from web
+  get_url:
+    url: "https://bootstrap.pypa.io/get-pip.py"
+    dest: /tmp/get-pip.py
+
+- name: Install pip
+  shell: "python /tmp/get-pip.py"
+
+
+- name: Upgrade pip
+  shell: "pip install --upgrade pip"
+
+- name: Pip install fexpect
+  shell: "pip install fexpect"
+
+- name: Get Contianer ID if its already running
+  shell: "podman ps -aqf 'name=mirror_registry' "
+  register: container_id
+
+- name: Stop the container using its ID 
+  command: "podman stop {{container_id.stdout}}"
+  ignore_errors: yes
+- pause:
+    seconds: 30  
+
+- name: Remove the container using its ID 
+  command: "podman rm {{container_id.stdout}}"
+  ignore_errors: yes
+
+
+- name: Podman prune container
+  expect:
+    command: "podman system prune"
+    responses: 
+      (?i)Continue?: "y"
+  ignore_errors: yes
+ 
+
+
+- name: Delete storage directory 
+  file:
+    path: /var/lib/containers/storage/overlay-containers/
+    state: absent
+
+
+
+
+- pause:
+    seconds: 15  
+      
+- name: Run Podman container
+  shell: "podman run --name mirror_registry -p 5000:5000  -v /opt/registry/data:/var/lib/registry:z -v /opt/registry/auth:/auth:z  -e REGISTRY_AUTH=htpasswd  -e REGISTRY_AUTH_HTPASSWD_REALM=Registry  -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd -v /opt/registry/certs:/certs:z -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key    -e REGISTRY_COMPATIBILITY_SCHEMA1_ENABLED=true -d docker.io/library/registry:2"
+  retries: 3
+  delay: 10
+  register: result
+  until: result.rc == 0
+
+
+  
+- name: Verify mirror_registry came up by testing  5000 port
+  shell: "curl -u dummy:dummy -k https://{{sl_ocp_helpernode[0]}}.{{base_domain_prefix}}.{{base_domain}}:5000/v2/_catalog"
+
+
+
+- name: Set Facts for password and user base64encoded
+  set_fact: HTTP_AUTH="{{'dummy:dummy' | b64encode }}"
+
+
+
+- name: Write out host auth information to a file
+  template:
+    src: "{{ role_path }}/templates/myauth.json.j2"
+    dest: "/opt/registry/auth//myauth.json"
+ 
+- name: Replace between the expressions (requires Ansible >= 2.4)
+  replace:
+    path: /opt/registry/auth//myauth.json
+    regexp: '}}},'
+    replace: '},'
+
+
+- name: Set FACTS before pulling the from redhat OCP_RELEASE , LOCAL_REGISTRY, LOCAL_REPOSITORY
+  set_fact:
+    OCP_RELEASE="{{openshift_build}}.{{openshift_build_version}}-x86_64"
+    LOCAL_REGISTRY="{{sl_ocp_helpernode[0]}}.{{base_domain_prefix}}.{{base_domain}}:5000"
+    LOCAL_REPOSITORY="ocp4/openshift4"
+    PRODUCT_REPO="openshift-release-dev"
+    LOCAL_SECRET_JSON="/opt/registry/auth//myauth.json"
+    RELEASE_NAME="ocp-release"
+  
+- name: Update CA cert trust
+  shell: "update-ca-trust extract"
+
+- name: Pull OpenShift Containers
+  shell: "oc adm -a {{LOCAL_SECRET_JSON}} release mirror --from=quay.io/{{PRODUCT_REPO}}/{{RELEASE_NAME}}:{{OCP_RELEASE}} --to={{LOCAL_REGISTRY}}/{{LOCAL_REPOSITORY}} --to-release-image={{LOCAL_REGISTRY}}/{{LOCAL_REPOSITORY}}:{{OCP_RELEASE}}"
+  register: contentof_imageContentSources
+
+- debug: var=contentof_imageContentSources
+  when: debug|default(false) == true
+
+-
+
+- name: Create new openshfit-install command based on local container
+  shell: "oc adm -a {{LOCAL_SECRET_JSON}} release extract --command=openshift-install {{LOCAL_REGISTRY}}/{{LOCAL_REPOSITORY}}:{{OCP_RELEASE}}"
+  args:
+    chdir: /usr/local/bin
+
+
+- name: Disable firewall ports eth1
+  firewalld:
+    zone: publicOCP
+    permanent: yes
+    immediate: yes
+    state: disabled
+    port: "{{ item }}"
+  with_items:
+    - 5000/tcp

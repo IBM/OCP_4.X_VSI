@@ -1,0 +1,96 @@
+# This can be download from RedHat OpenShift 
+
+### Softlayer info
+sl_username: "harsingh"
+sl_api_key: "c0fe75e7f4b6c0d0eee345d0308a1d827a45b2c1e6b3eca15ba64df02381ab8b"
+sl_endpoint_url: "https://api.service.usgov.softlayer.com/rest/v3.1"
+sl_timeout: 40
+
+
+
+sl_datacenter: "dal08"
+sl_private_vlan: "801"
+#Portable IP information Address IBM Cloud for Gov
+sl_vlan_info:
+  vlan_first_ip: 100.102.22.128
+  vlan_last_ip: 100.102.22.191
+  netmask_cidr: "/26"
+
+
+
+#Hint: you can change to monthly
+sl_vsi_billing: "hourly"
+
+
+# If vyatta is already deployed as part of the infrastructure then set the boolean value to true. 
+# If vyatta is not part of infrastructure then set the boolean value  to false
+sl_vyatta: false
+
+
+# OPENSHIFT INFORMATION
+# Hint:  For RedHat you can get this using: https://cloud.redhat.com/openshift/install/metal/user-provisioned
+#pullsecret:  'GET YOUR OWN FROM https://cloud.redhat.com/openshift/install'
+pullsecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K2hhcnNpbmdoX25jY29lX2RlbW8xeW5sbm9rMHlubHd5a3B1eHNtdXh1anlka2M6UzUwRllLUzNVNzNGMTVENk4wS1dPTEJQVkhRMjY0MExRT0dDTTlNRU1HUEIyU1dNRFk1MkdUWDBDVURBSDBFNg==","email":"harsingh@us.ibm.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K2hhcnNpbmdoX25jY29lX2RlbW8xeW5sbm9rMHlubHd5a3B1eHNtdXh1anlka2M6UzUwRllLUzNVNzNGMTVENk4wS1dPTEJQVkhRMjY0MExRT0dDTTlNRU1HUEIyU1dNRFk1MkdUWDBDVURBSDBFNg==","email":"harsingh@us.ibm.com"},"registry.connect.redhat.com":{"auth":"NTMyMTE5OTV8dWhjLTFZTkxOb2swWW5sV1lLUHVYc011eHVqeURLYzpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXlOV1JqT1RFMVpqVXpZalUwT1RjNVlXSmhOVFJqTUdJNU1tSTRZemd5TnlKOS5LLUNfUVZfS3QxR21qd3g3aFo0aXlfb3hXTFA2ZC0zaWd2Wnp1bVFFcGtjMV9RaG1BejJ4S1B4M0xhd0tlbnFHMXFWRTkyRW9YWUxNNktYMzZwQkhZbTBSOEQwX0RweTFicnE2cGRMcHI2SmJKd3VVam1fYncwYm1sTUJWR245ZjFreG94N1JadnBsVEk3RWplYmFkSnNpZ21fbl95bU5NU3laY2xPdEZfbXd5YV9uYnFZWmp2UGhTbE00Smk3cTJiY1BpdUZrMUVPVFBsWHlKYUU1aG52MWdfOUZaNXRyRUozOUgzQUpGb3ZGYXdIY2F6RVdMbEZ3QWtZREFYLVpfUnpLNjd2aDNQLTdMVW9RMzVRekc0S2k3dE9UNEhYbFZtOF9xOGppVkU0MXBPVU5ORkdwczJBSVUtZFdHbUNEMTVJM2d4YVl1WVE0dE9yTGJ5UGNDcWxsdk9tOUF1ZXZGcC1VWGFCT1B2bkYxaVhpRkV1ekppaUo5QlFfdnBXWGtUa2VnVlJxb0toaFRfdEd0RXVhdkJHaERxcjg3emR6Vjh4ZXp2V3RnOXpHY3hVRV9RdnpkUFNyOG5GYi11bkVLZ18zY0k5Y1V4d2JpS2FOTldxNTMzOThPZFV6bFRjUW43YUc0YUYxNk16SldUOXFISWhQLXcwaDUxNHVORC1wd3BCdGsxUm4zVnJTb2x4T2pQRVFRRm15RnViOTdCVUlVeEZvQXp6UFBqM3RaZm01TDFvdVFvcVFLVFA0a2NHcnlsWHFBMnZuVnFBdWdyWF9fQk1tMkxKczJTSE1nVVNZRjloR1BacXFpUGEyZWpCODlNWjhZRHgtUUpzRlpUbWFPNU1kSjhiTm5wdnVNZ1RUNVlEX1BaemVXUUpIU3hvZmZFNDVZWDVZQjFmcw==","email":"harsingh@us.ibm.com"},"registry.redhat.io":{"auth":"NTMyMTE5OTV8dWhjLTFZTkxOb2swWW5sV1lLUHVYc011eHVqeURLYzpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXlOV1JqT1RFMVpqVXpZalUwT1RjNVlXSmhOVFJqTUdJNU1tSTRZemd5TnlKOS5LLUNfUVZfS3QxR21qd3g3aFo0aXlfb3hXTFA2ZC0zaWd2Wnp1bVFFcGtjMV9RaG1BejJ4S1B4M0xhd0tlbnFHMXFWRTkyRW9YWUxNNktYMzZwQkhZbTBSOEQwX0RweTFicnE2cGRMcHI2SmJKd3VVam1fYncwYm1sTUJWR245ZjFreG94N1JadnBsVEk3RWplYmFkSnNpZ21fbl95bU5NU3laY2xPdEZfbXd5YV9uYnFZWmp2UGhTbE00Smk3cTJiY1BpdUZrMUVPVFBsWHlKYUU1aG52MWdfOUZaNXRyRUozOUgzQUpGb3ZGYXdIY2F6RVdMbEZ3QWtZREFYLVpfUnpLNjd2aDNQLTdMVW9RMzVRekc0S2k3dE9UNEhYbFZtOF9xOGppVkU0MXBPVU5ORkdwczJBSVUtZFdHbUNEMTVJM2d4YVl1WVE0dE9yTGJ5UGNDcWxsdk9tOUF1ZXZGcC1VWGFCT1B2bkYxaVhpRkV1ekppaUo5QlFfdnBXWGtUa2VnVlJxb0toaFRfdEd0RXVhdkJHaERxcjg3emR6Vjh4ZXp2V3RnOXpHY3hVRV9RdnpkUFNyOG5GYi11bkVLZ18zY0k5Y1V4d2JpS2FOTldxNTMzOThPZFV6bFRjUW43YUc0YUYxNk16SldUOXFISWhQLXcwaDUxNHVORC1wd3BCdGsxUm4zVnJTb2x4T2pQRVFRRm15RnViOTdCVUlVeEZvQXp6UFBqM3RaZm01TDFvdVFvcVFLVFA0a2NHcnlsWHFBMnZuVnFBdWdyWF9fQk1tMkxKczJTSE1nVVNZRjloR1BacXFpUGEyZWpCODlNWjhZRHgtUUpzRlpUbWFPNU1kSjhiTm5wdnVNZ1RUNVlEX1BaemVXUUpIU3hvZmZFNDVZWDVZQjFmcw==","email":"harsingh@us.ibm.com"}}}'
+# Hint OpenShift build number: 4.3 
+openshift_build: "4.3"
+# Hint OpenShift build version: 8 
+openshift_build_version: "8"
+
+
+
+# OPENSHIFT HOST INFO
+# Hint: ibm.com
+base_domain: "ibm.com"
+# Hint: us 
+base_domain_prefix: "us"
+# Hint: dev
+sl_ocp_host_prefix: "xyz"
+fips_flag: false
+
+# OPENSHIFT HOSTNAME INFO
+sl_ocp_worker_node_name_prefix: "{{sl_ocp_host_prefix}}-worker-"
+sl_ocp_master_node_name_prefix: "{{sl_ocp_host_prefix}}-master-"
+
+# Hint: To add more master node just simple add   - "{{ sl_ocp_master_node_name_prefix}}3"
+sl_ocp_masters:
+  - "{{ sl_ocp_master_node_name_prefix}}0"
+  - "{{ sl_ocp_master_node_name_prefix}}1"
+  - "{{ sl_ocp_master_node_name_prefix}}2"
+
+# Hint: To add more worker node just simple add   - "{{sl_ocp_worker_node_name_prefix}}4"
+sl_ocp_workers:
+  - "{{sl_ocp_worker_node_name_prefix}}0"
+  - "{{sl_ocp_worker_node_name_prefix}}1"
+  - "{{sl_ocp_worker_node_name_prefix}}2"
+
+
+sl_ocp_helpernode:
+  - "{{sl_ocp_host_prefix}}-helpernode"
+
+sl_ocp_bootstrap:
+  - "{{sl_ocp_host_prefix}}-bootstrap"
+
+
+
+
+
+##################################################################
+# The following are variables that are parameterized for OCP v4.2
+##################################################################
+
+# RHCOS build and url
+v_rhcos_bios: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{openshift_build}}/{{openshift_build}}.{{openshift_build_version}}/rhcos-{{openshift_build}}.{{openshift_build_version}}-x86_64-metal.x86_64.raw.gz"
+v_rhcos_initramfs: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{openshift_build}}/{{openshift_build}}.{{openshift_build_version}}/rhcos-{{openshift_build}}.{{openshift_build_version}}-x86_64-installer-initramfs.x86_64.img"
+v_rhcos_install_kernel: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{openshift_build}}/{{openshift_build}}.{{openshift_build_version}}/rhcos-{{openshift_build}}.{{openshift_build_version}}-x86_64-installer-kernel-x86_64"
+
+
+# OCP Installer
+v_ocp_client: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{openshift_build}}.{{openshift_build_version}}/openshift-client-linux-{{openshift_build}}.{{openshift_build_version}}.tar.gz"
+v_ocp_installer: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{openshift_build}}.{{openshift_build_version}}/openshift-install-linux-{{openshift_build}}.{{openshift_build_version}}.tar.gz"
+
+vsi_provison_pause: 15
+
+debug: true
+#time.service.networklayer.com
+
+ntp_server: "time.service.usgov.softlayer.com"
